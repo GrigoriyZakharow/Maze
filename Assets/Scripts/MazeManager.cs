@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MazeManager : MonoBehaviour
-{
+public class MazeManager : MonoBehaviour {
   private int index = 0;
   private float timer;
   private const float time = 0.05f;
@@ -21,30 +20,24 @@ public class MazeManager : MonoBehaviour
   public List<Vertex> visitedCells = new List<Vertex>();
   public List<Vertex> shortestPath = new List<Vertex>();
 
-  private void Start()
-  {
+  private void Start() {
     timer = time;
   }
 
-  public void ShowPath()
-  {
-    if(shortestPath.Count != 0)
-    {
+  public void ShowPath() {
+    if (shortestPath.Count != 0) {
       ShowStep();
       timer = 0.1f;
     }
   }
 
-  public void ShowStep()
-  {
-    if (visitedCells.Count != 0)
-    {
+  public void ShowStep() {
+    if (visitedCells.Count != 0) {
       visitedCells[0].cell.panelStep.SetActive(true);
       visitedCells[0].cell.stepSize.gameObject.SetActive(true);
       visitedCells.RemoveAt(0);
     }
-    else
-    {
+    else {
       shortestPath[0].cell.renderer.material.color = shortestPath[0].cell.green;
       shortestPath.RemoveAt(0);
 
@@ -52,13 +45,10 @@ public class MazeManager : MonoBehaviour
     }
   }
 
-  public void ShowAndHideWallet()
-  {
-    switch (stateAction)
-    {
+  public void ShowAndHideWallet() {
+    switch (stateAction) {
       case StateAction.Creation:
-        if (index < listCells.Count)
-        {
+        if (index < listCells.Count) {
           countCellAction += maze.GetLength(0);
 
           while (index < countCellAction) listCells[index++].gameObject.SetActive(true);
@@ -68,52 +58,43 @@ public class MazeManager : MonoBehaviour
       case StateAction.Generation:
         countCellAction += maze.GetLength(0);
 
-        while (index < countCellAction)
-        {
+        while (index < countCellAction) {
           if (listCells[index].leftWallIsActive is false) listCells[index].leftWall.SetActive(false);
           if (listCells[index].rightWallIsActive is false) listCells[index].rightWall.SetActive(false);
 
           index++;
         }
 
-        if (index == listCells.Count)
-        {
+        if (index == listCells.Count) {
           ChangeIndexAndStateAction();
           ChangeButtonShowResetGeneration();
         }
         break;
       case StateAction.Regeneration:
-        if (flagRestorationWalls is true)
-        {
+        if (flagRestorationWalls is true) {
           countCellAction += maze.GetLength(0);
 
-          while (index < countCellAction)
-          {
+          while (index < countCellAction) {
             listCells[index].leftWall.SetActive(true);
             listCells[index++].rightWall.SetActive(true);
           }
 
-          for (int i = 0; i < maze.GetLength(0); i++)
-          {
-            for (int j = 0; j < maze.GetLength(1); j++)
-            {
+          for (int i = 0; i < maze.GetLength(0); i++) {
+            for (int j = 0; j < maze.GetLength(1); j++) {
               if (i == sizeMaze - 1) maze[i, j].rightWall.SetActive(false);
               if (j == sizeMaze - 1) maze[i, j].leftWall.SetActive(false);
             }
           }
 
-          if (index == listCells.Count)
-          {
+          if (index == listCells.Count) {
             index = countCellAction = 0;
             flagRestorationWalls = false;
           }
         }
-        else
-        {
+        else {
           countCellAction += maze.GetLength(0);
 
-          while (index < countCellAction)
-          {
+          while (index < countCellAction) {
             if (listCells[index].leftWallIsActive is false) listCells[index].leftWall.SetActive(false);
             if (listCells[index].rightWallIsActive is false) listCells[index].rightWall.SetActive(false);
 
@@ -124,19 +105,16 @@ public class MazeManager : MonoBehaviour
         }
         break;
       case StateAction.Removal:
-        if (index < listCells.Count)
-        {
+        if (index < listCells.Count) {
           countCellAction += maze.GetLength(0);
 
-          while (index < countCellAction)
-          {
+          while (index < countCellAction) {
             listCells[index].animationComponent.clip = clipDestroy;
             listCells[index++].animationComponent.Play();
           }
         }
 
-        if (index == listCells.Count)
-        {
+        if (index == listCells.Count) {
           ChangeIndexAndStateAction();
           ChangeButtonShowResetGeneration();
           listCells = new List<Cell>();
@@ -145,13 +123,11 @@ public class MazeManager : MonoBehaviour
     }
   }
 
-  public void ChangeIndexAndStateAction()
-  {
+  public void ChangeIndexAndStateAction() {
     index = 0;
     timer = time;
     countCellAction = 0;
-    switch (stateAction)
-    {
+    switch (stateAction) {
       case StateAction.Regeneration:
         stateAction = StateAction.Generated;
         break;
@@ -167,35 +143,29 @@ public class MazeManager : MonoBehaviour
     }
   }
 
-  private void Update()
-  {
+  private void Update() {
     timer -= Time.deltaTime;
-    if(typeSearch == TypeSearch.Nothing) {
-      if (timer <= 0f)
-      {
+    if (typeSearch == TypeSearch.Nothing) {
+      if (timer <= 0f) {
         ShowAndHideWallet();
         timer = time;
       }
     }
-    else
-    {
-      if (timer < 0f)
-      {
+    else {
+      if (timer < 0f) {
         ShowPath();
         timer = time * 2;
       }
     }
   }
 
-  public void GenerateMaze(Cell[,] maze)
-  {
+  public void GenerateMaze(Cell[,] maze) {
     Cell current = maze[0, 0];
     current.visited = true;
     graph = new Graph();
 
     Stack<Cell> stack = new Stack<Cell>();
-    do
-    {
+    do {
       List<Cell> unvisibre = new List<Cell>();
 
       int x = current.x;
@@ -206,8 +176,7 @@ public class MazeManager : MonoBehaviour
       if (x < sizeMaze - 2 && !maze[x + 1, z].visited) unvisibre.Add(maze[x + 1, z]);
       if (z < sizeMaze - 2 && !maze[x, z + 1].visited) unvisibre.Add(maze[x, z + 1]);
 
-      if (unvisibre.Count > 0)
-      {
+      if (unvisibre.Count > 0) {
         Cell chosen = unvisibre[Random.Range(0, unvisibre.Count)];
         RemoveWall(current, chosen);
 
@@ -216,12 +185,10 @@ public class MazeManager : MonoBehaviour
         current = chosen;
       }
 
-      else if (stack.Count > 0)
-      {
+      else if (stack.Count > 0) {
         current = stack.Pop();
 
-        if (stack.Count > 0)
-        {
+        if (stack.Count > 0) {
           Cell next = stack.Peek();
           RemoveWall(current, next);
         }
@@ -238,42 +205,34 @@ public class MazeManager : MonoBehaviour
     else stateAction = StateAction.Regeneration;
   }
 
-  private void RemoveWall(Cell cell1, Cell cell2)
-  {
-    if (cell1.x == cell2.x)
-    {
+  private void RemoveWall(Cell cell1, Cell cell2) {
+    if (cell1.x == cell2.x) {
       if (cell1.z > cell2.z) cell1.rightWallIsActive = false;
       else cell2.rightWallIsActive = false;
     }
-    else
-    {
+    else {
       if (cell1.x > cell2.x) cell1.leftWallIsActive = false;
       else cell2.leftWallIsActive = false;
     }
   }
 
-  public void CreatCells(GameObject cellPref)
-  {
+  public void CreatCells(GameObject cellPref) {
     int nameInt = 0;
     Cell cellContainer;
 
     maze = new Cell[sizeMaze, sizeMaze];
 
-    for (int i = 0; i < maze.GetLength(0); i++)
-    {
-      for (int j = 0; j < maze.GetLength(1); j++)
-      {
+    for (int i = 0; i < maze.GetLength(0); i++) {
+      for (int j = 0; j < maze.GetLength(1); j++) {
         cellContainer = Instantiate(cellPref, new Vector3(i, 0, j), Quaternion.identity).GetComponent<Cell>();
         cellContainer.gameObject.SetActive(false);
 
-        if (i == sizeMaze - 1)
-        {
+        if (i == sizeMaze - 1) {
           cellContainer.rightWall.SetActive(false);
           cellContainer.cube.SetActive(false);
         }
 
-        if (j == sizeMaze - 1)
-        {
+        if (j == sizeMaze - 1) {
           cellContainer.leftWall.SetActive(false);
           cellContainer.cube.SetActive(false);
         }
@@ -290,16 +249,12 @@ public class MazeManager : MonoBehaviour
     stateAction = StateAction.Creation;
   }
 
-  public void RegenerateMaze()
-  {
+  public void RegenerateMaze() {
     flagRestorationWalls = true;
 
-    for (int i = 0; i < maze.GetLength(0); i++)
-    {
-      for (int j = 0; j < maze.GetLength(1); j++)
-      {
-        if (i != sizeMaze - 1 && j != sizeMaze - 1)
-        {
+    for (int i = 0; i < maze.GetLength(0); i++) {
+      for (int j = 0; j < maze.GetLength(1); j++) {
+        if (i != sizeMaze - 1 && j != sizeMaze - 1) {
           maze[i, j].rightWallIsActive = maze[i, j].leftWallIsActive = true;
           maze[i, j].visited = false;
         }
@@ -309,10 +264,8 @@ public class MazeManager : MonoBehaviour
     GenerateMaze(maze);
   }
 
-  public void ChangeButtonShowResetGeneration()
-  {
-    switch (stateAction)
-    {
+  public void ChangeButtonShowResetGeneration() {
+    switch (stateAction) {
       case StateAction.Generated:
         buttonGenerate.SetActive(false);
         buttonRegenerate.SetActive(true);

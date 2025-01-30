@@ -1,6 +1,4 @@
-
-public enum StateAction
-{
+public enum StateAction {
   Nothing,
   Creation,
   Created,
@@ -10,8 +8,7 @@ public enum StateAction
   Removal
 }
 
-public enum TypeSearch
-{
+public enum TypeSearch {
   Nothing,
   BFS,
   DFS

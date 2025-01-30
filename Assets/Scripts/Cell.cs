@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Cell : MonoBehaviour
-{
+public class Cell : MonoBehaviour {
   public int x;
   public int z;
 
@@ -16,7 +15,7 @@ public class Cell : MonoBehaviour
 
   public bool leftWallIsActive = true;
   public bool rightWallIsActive = true;
-  
+
   public GameObject panelStep;
   public Text stepSize;
 
